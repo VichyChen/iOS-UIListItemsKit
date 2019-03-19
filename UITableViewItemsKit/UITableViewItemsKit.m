@@ -10,6 +10,8 @@
 
 @implementation UITableViewItemsKit
 
+@synthesize dataSource = _dataSource;
+
 - (instancetype)init {
     if (self = [super init]) {
     }
@@ -30,19 +32,28 @@
     NSLog(@"UITableViewItemsKit dealloc");
 }
 
+#pragma mark - Private
+
+- (NSArray <UITableViewItem *>*)getDataSource:(UITableView *)tableView {
+    if (!self.dataSource) {
+        self.dataSource = [self.delegate tableViewItemsInTableView:tableView];
+    }
+    return self.dataSource;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [[self.delegate tableViewItemsInTableView:tableView] count];
+    return [[self getDataSource:tableView] count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][section];
+    UITableViewItem *model = [self getDataSource:tableView][section];
     return model.numberOfRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][indexPath.section];
+    UITableViewItem *model = [self getDataSource:tableView][indexPath.section];
     UITableViewCell *(^block)(UITableView *, NSIndexPath *) = model.cellForRow;
     if (block) {
         return block(tableView, indexPath);
@@ -53,7 +64,7 @@
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][indexPath.section];
+    UITableViewItem *model = [self getDataSource:tableView][indexPath.section];
     CGFloat (^block)(UITableView *, NSIndexPath *) = model.heightForRow;
     if (block) {
         return block(tableView, indexPath);
@@ -62,7 +73,7 @@
 }
 
 - (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][section];
+    UITableViewItem *model = [self getDataSource:tableView][section];
     UIView *(^block)(UITableView *, NSInteger) = model.viewForHeader;
     if (block) {
         return block(tableView, section);
@@ -77,7 +88,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][section];
+    UITableViewItem *model = [self getDataSource:tableView][section];
     CGFloat (^block)(UITableView *, NSInteger) = model.heightForHeader;
     if (block) {
         return block(tableView, section);
@@ -86,7 +97,7 @@
 }
 
 - (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][section];
+    UITableViewItem *model = [self getDataSource:tableView][section];
     UIView *(^block)(UITableView *, NSInteger) = model.viewForFooter;
     if (block) {
         return block(tableView, section);
@@ -101,7 +112,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][section];
+    UITableViewItem *model = [self getDataSource:tableView][section];
     CGFloat (^block)(UITableView *, NSInteger) = model.heightForFooter;
     if (block) {
         return block(tableView, section);
@@ -112,7 +123,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    UITableViewItem *model = [self.delegate tableViewItemsInTableView:tableView][indexPath.section];
+    UITableViewItem *model = [self getDataSource:tableView][indexPath.section];
     void (^block)(UITableView *, NSIndexPath *) = model.didSelectRow;
     if (block) {
         block(tableView, indexPath);

@@ -14,6 +14,8 @@
 
 @property (nonatomic, weak) id <UITableViewItemsDelegate> delegate;
 
+@property (nonatomic, copy) NSArray <UITableViewItem *>*dataSource;
+
 - (instancetype)initWithTableView:(UITableView *)tableView delegate:(id<UITableViewItemsDelegate>)delegate ;
 
 @end
